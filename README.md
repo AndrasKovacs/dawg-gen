@@ -86,7 +86,9 @@ Steps:
 ### Possible improvements
 
 * Currently there is a small (< 0,1%) variance in output size, most likely because the hashing of memory addresses changes across runs, which changes the iteration order of some hash tables. I haven't tracked down the exact cause of this; it'd be reassuring to eliminate this and optimize compression to the best cases of the variance.
+
 * Doing a C++ port. I have a C++ implementation of a simpler algorithm that produces about 10% bigger output and runs in 390ms for the TWL06 dictionary. The Python version of that algorithm runs in 6,6 sec. A C++ port for the more complicated algorithm should produce a comparable speedup (though debugging such C++ often compromises my mental balance).
+
 * Implementing the 3-byte node-packing. I think I'll do that shortly.  
 
 
