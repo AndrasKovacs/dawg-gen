@@ -11,6 +11,7 @@ from time import clock
 
 ######################## Read/check word list ###############################
 
+print
 if len(argv) != 2:
     print "Usage: dawg_gen.py [word list path]"
     exit(1)
@@ -155,7 +156,7 @@ print "finished in {:.4} seconds.".format(clock()-t)
 ######################### check trie ###################################
 
 t = clock()
-print "Checking validity...",
+print "Checking output correctness...",
 
 def extract_words(array, i=root, carry = ""):
     node = array[i]
@@ -183,9 +184,9 @@ print
 
 ################## export as bitpacked array binaries #########################
 
-def prompt():
+def prompt_filename():
     while True:
-        inp = raw_input("Enter filename to export to or 'q' to quit: ")
+        inp = raw_input("Enter export path: ")
         if inp in ('q', 'Q'): 
             exit(0)
         if os.path.exists(inp):
@@ -196,34 +197,56 @@ def prompt():
         else:
             return inp
 
-inp = prompt()
+
+def prompt_packing_mode():
+    ok_3b = len(array) <= 2**17
+    ok_4b = len(array) <= 2**22
+    while True:
+        print
+        print "Choose node size:"
+        print "    (3) bytes" + " -> UNAVAILABLE: number of nodes above 2**17-1 or 131071"*(not ok_3b)
+        print "    (4) bytes" + " -> UNAVAILABLE: number of nodes above 2**22-1 or 4194303"*(not ok_4b)
+        print
+        mode = raw_input("> ")
+        if mode in ok_3b*"3" + ok_4b*"4":
+            return mode
+
+
+inp = prompt_filename()
+mode = prompt_packing_mode()
 
 t = clock()
+print
 print "Exporting as bit-packed array...",
 
-# bit layout:
-#           22: children index
-#            8: character
-#            1: end of list
-#            1: end of word
+if mode == "4":
+    output = ar.array('L', [0]*len(array))
 
+    for i,x in enumerate(array):
+        output[i] |= (x.children << 10)
+        output[i] |= ((ord(x.val) if x.val else 0) << 2)
+        output[i] |= (x.end_of_list<<1)
+        output[i] |= (x.is_end)
+    outfile = open(inp, "wb")
+    output.tofile(outfile)
+    outfile.close()
+    print "finished in {:.4} seconds.".format(clock()-t)
 
-#Use these masks for testing:
+elif mode == "3":
+    output = ar.array('B', [0]*(len(array)*3))
 
-# indexmask = 0b11111111111111111111110000000000
-# valmask   = 0b00000000000000000000001111111100
-# eolmask   = 0b00000000000000000000000000000010
-# eowmask   = 0b00000000000000000000000000000001
+    for i,x in enumerate(array):
+        i *= 3
+        a, b, c = i, i+1, i+2
+        output[a] = (x.children & 0b00000000011111111)
+        output[b] = (x.children & 0b01111111100000000) >> 8
+        output[c] = (x.children & 0b10000000000000000) >> 9
+        output[c] |= ((ord(x.val) - ord('A') + 1 if x.val else 0) << 2) # 0 is reserved for root and end-of-trie nodes
+        output[c] |= (x.end_of_list<<1)
+        output[c] |= (x.is_end)
 
-output = ar.array('L', [0]*len(array))
+    outfile = open(inp, "wb")
+    output.tofile(outfile)
+    outfile.close()
+    print "finished in {:.4} seconds.".format(clock()-t)
 
-for i,x in enumerate(array):
-    output[i] |= (x.children << 10)
-    output[i] |= ((ord(x.val) if x.val else 0) << 2)
-    output[i] |= (x.end_of_list<<1)
-    output[i] |= (x.is_end)
-
-outfile = open(inp, "wb")
-output.tofile(outfile)
-outfile.close()
-print "finished in {:.4} seconds.".format(clock()-t)
