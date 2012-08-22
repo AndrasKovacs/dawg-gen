@@ -7,7 +7,7 @@ See http://en.wikipedia.org/wiki/Trie and http://en.wikipedia.org/wiki/Directed_
 
 Python 2.7.
 
-### Acknowledgement:
+### Acknowledgement
 
 https://github.com/chalup/dawggenerator for piquing my interest and the basic idea of using hashes for sub-trie comparison.
 
@@ -15,18 +15,23 @@ https://github.com/chalup/dawggenerator for piquing my interest and the basic id
 
 Launch from console:
 
-    > dawg_gen.py [word list file]
+    $ dawg_gen.py [word list file]
 
-Note that the word list must be sorted, delimited by space or newline and have uppercase words. The program will prompt you for the output location for the compressed DAWG. Searching algorithms are not included; you are free to write those, armed with an understanding of the data format described below. 
+Note that the word list must be sorted, delimited by space or newline and have uppercase words. The program will prompt you for 
+
+- The output location.
+- Whether you choose 3 or 4 byte nodes.
+
+Searching algorithms are not included; you are free to write those, armed with an understanding of the data format described below. 
 
 ### Data format
 
-The output is essentially an array of 32-bit integers. Each integer is a trie node encoding the following data fields:
+The output is an array of 3- or 4-byte binary chunks. Each chunk encodes a trie node containing the following fields:
 
-- Index of first child: 	22 bits
-- Value of character: 		8 bits
-- End-of-children-list flag:    1 bit
-- End-of-word flag:		1 bit
+- Index of first child
+- Value of character
+- End-of-children-list flag
+- End-of-word flag
 
 In a traditional trie, a node has a character value and a list of child nodes. The main difference (as far as the logical structure goes, the only notable difference) here is that nodes store only a pointer to their first child. This is all that is needed because the children are laid out next to each other in the array, thus iterating over them can be done by incrementing the node index until a node with the end-of-children-list flag set is found. A node that has no children points to a "null" node that has a invalid character value. Also, a root node pointing to the first child in the uppormost child list is always positioned at the very end of the array. This node also has an empty/invalid character value. 
 
@@ -61,9 +66,42 @@ Here the root node points to "A", which in turn points to node 1, and starting f
 
 Note that only the root node has a fixed position; other nodes (including the null end-node) are laid out arbitrarily. Moreover, child lists are interleaved, for example, the child list "A", "B", "C", "D", may have a parent that points to "A" as first child, and another parent that points to "C". However, neither the interleaving nor the internal ordering change anything about the logical structure. 
 
+### 3- vs. 4-byte nodes
+
+Bit layout:
+
+<table, border="1"
+cellpadding="10">
+  <tr>
+    <th></th><th>3 byte</th><th>4 byte</th>
+  </tr>
+  <tr>
+    <td>First child</td><td>17</td><td>22</td>
+  </tr>
+  <tr>
+    <td>Character</td><td>5</td><td>8</td>
+  </tr>
+  <tr>
+    <td>End-of-list</td><td>1</td><td>1</td>
+  </tr>
+  <tr>
+    <td>End-of-word</td><td>1</td><td>1</td>
+  </tr>
+</table>
+
+Notes:
+
+- The maximum number of indexable nodes is 2^17 - 1 = 131071 and 2^2 - 1 = 4194303 respectively.
+
+- In the case of 3-byte nodes, the character values are shifted down to the [1,26] range (0 is reserved for root and end nodes). With 4-byte nodes the ASCII values are preserved.
+
+- The first child index is laid out in little endian order in the 3-byte node.
+
+- Tip for handling 3-byte nodes in C/C++: create a struct with an unsigned char array to hold the data, then create another struct with the appropriate bitfields for the node layout. Cast a "data" struct pointer to the "wrapper" struct to read and write the contents with the simple bitfield syntax. Make sure to never try to access the last byte of the wrapper.
+
 ### Compression preformance
 
-The 178691-word TWL06 dictionary (http://www.isc.ro/lists/twl06.zip) is compressed to about 113980 nodes on my 2,66 gHz Core2 Duo computer in 9 seconds. There is another 1 second of safety checking of input and output in the program hosted here. There is a small variance in output size (see "Possible improvements"). 
+The 178691-word TWL06 dictionary (http://www.isc.ro/lists/twl06.zip) is compressed to about 113980 nodes on my 2,66 GHz Core2 Duo computer in 9 seconds. There is another 1 second of safety checking of input and output in the program hosted here. There is a small variance in output size (see "Possible improvements"). 
 
 ### Implementation
 
@@ -85,15 +123,9 @@ Steps:
 
 ### Possible improvements
 
-* Currently there is a small (< 0,1%) variance in output size, most likely because the hashing of memory addresses changes across runs, which changes the iteration order of some hash tables. I haven't tracked down the exact cause of this; it'd be reassuring to eliminate this and optimize compression to the best cases of the variance.
+- Currently there is a small (< 0,1%) variance in output size, most likely because the hashes of memory addresses vary across runs, which changes the iteration order of some hash tables. I haven't tracked down the exact cause of this; it'd be reassuring to eliminate this and optimize compression to the be near the best case of the current variance.
 
-* Doing a C++ port. I have a C++ implementation of a simpler algorithm that produces about 10% bigger output and runs in 390ms for the TWL06 dictionary. The Python version of that algorithm runs in 6,6 sec. A C++ port for the more complicated algorithm should produce a comparable speedup (though debugging such C++ often compromises my mental balance).
-
-* Implementing the 3-byte node-packing. I think I'll do that shortly.  
-
-
-
-
+- Doing a C++ port. I have a C++ implementation of a simpler algorithm that produces about 10% bigger output and runs in 390ms for the TWL06 dictionary. The Python version of that algorithm runs in 6,6 sec. A C++ port for the more complicated algorithm should produce a comparable speedup (though debugging such C++ often compromises my mental balance).
 
 
 
