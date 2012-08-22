@@ -27,7 +27,7 @@ Launch from console:
 Note that the word list must be sorted, delimited by space or newline and have uppercase words. The program will prompt you for 
 
 - The output location.
-- Whether you choose 3 or 4 byte nodes.
+- Whether you choose 3- or 4-byte nodes (if available).
 
 Searching algorithms are not included; you are free to write those, armed with an understanding of the data format described below. 
 
