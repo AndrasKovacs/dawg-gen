@@ -35,7 +35,7 @@ For example, a trie containing "AD", "AN", and "AT" may look like this:
 
 <table, border="1">
   <tr>
-    <th>Index</th><th>character</th><th>EOL</th><th>EOW</th><th>first_child</th>
+    <th>Index</th><th>Character</th><th>End-of-list</th><th>End-of-word</th><th>First child</th>
   </tr>
   <tr>
     <td>0</td><td>0</td><td>1</td><td>0</td><td>0</td>
