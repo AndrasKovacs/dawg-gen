@@ -1,6 +1,6 @@
 # DAWG generator #
 
-Creates highly compressed acyclic word graphs from word lists.
+Creates highly compressed directed acyclic word graphs from word lists.
 See http://en.wikipedia.org/wiki/Trie and http://en.wikipedia.org/wiki/Directed_acyclic_word_graph for an overview of the data structure.
 
 ### Requirements
