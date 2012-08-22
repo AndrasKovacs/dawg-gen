@@ -1,17 +1,24 @@
 # DAWG generator #
 
+
 Creates highly compressed directed acyclic word graphs from word lists.
 See http://en.wikipedia.org/wiki/Trie and http://en.wikipedia.org/wiki/Directed_acyclic_word_graph for an overview of the data structure.
 
+
 ### Requirements
+
 
 Python 2.7.
 
+
 ### Acknowledgement
+
 
 https://github.com/chalup/dawggenerator for piquing my interest and the basic idea of using hashes for sub-trie comparison.
 
+
 ### Usage
+
 
 Launch from console:
 
@@ -24,7 +31,9 @@ Note that the word list must be sorted, delimited by space or newline and have u
 
 Searching algorithms are not included; you are free to write those, armed with an understanding of the data format described below. 
 
+
 ### Data format
+
 
 The output is an array of 3- or 4-byte binary chunks. Each chunk encodes a trie node containing the following fields:
 
@@ -66,7 +75,9 @@ Here the root node points to "A", which in turn points to node 1, and starting f
 
 Note that only the root node has a fixed position; other nodes (including the null end-node) are laid out arbitrarily. Moreover, child lists are interleaved, for example, the child list "A", "B", "C", "D", may have a parent that points to "A" as first child, and another parent that points to "C". However, neither the interleaving nor the internal ordering change anything about the logical structure. 
 
+
 ### 3- vs. 4-byte nodes
+
 
 Bit layout:
 
@@ -99,11 +110,15 @@ Notes:
 
 - Tip for handling 3-byte nodes in C/C++: create a struct with an unsigned char array to hold the data, then create another struct with the appropriate bitfields for the node layout. Cast a "data" struct pointer to the "wrapper" struct to read and write the contents with the simple bitfield syntax. Make sure to never try to access the last byte of the wrapper.
 
+
 ### Compression preformance
+
 
 The 178691-word TWL06 dictionary (http://www.isc.ro/lists/twl06.zip) is compressed to about 113980 nodes on my 2,66 GHz Core2 Duo computer in 9 seconds. There is another 1 second of safety checking of input and output in the program hosted here. There is a small variance in output size (see "Possible improvements"). 
 
+
 ### Implementation
+
 
 Steps:
 
@@ -121,7 +136,9 @@ Steps:
 
 7. The resulting array is converted to an array of bit-packed integers. 
 
+
 ### Possible improvements
+
 
 - Currently there is a small (< 0,1%) variance in output size, most likely because the hashes of memory addresses vary across runs, which changes the iteration order of some hash tables. I haven't tracked down the exact cause of this; it'd be reassuring to eliminate this and optimize compression to the be near the best case of the current variance.
 
