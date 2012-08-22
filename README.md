@@ -13,7 +13,7 @@ https://github.com/chalup/dawggenerator for piquing my interest and the basic id
 
 ### Usage:
 
-Launch from console
+Launch from console:
 
     > dawg_gen.py [word list file]
 
