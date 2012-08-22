@@ -11,7 +11,7 @@ Python 2.7.
 
 https://github.com/chalup/dawggenerator for piquing my interest and the basic idea of using hashes for sub-trie comparison.
 
-### Usage:
+### Usage
 
 Launch from console:
 
