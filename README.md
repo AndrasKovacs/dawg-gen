@@ -114,7 +114,7 @@ Notes:
 ### Compression preformance
 
 
-The 178691-word TWL06 dictionary (http://www.isc.ro/lists/twl06.zip) is compressed to about 113980 nodes on my 2,66 GHz Core2 Duo computer in 9 seconds. There is another 1 second of safety checking of input and output in the program hosted here. There is a small variance in output size (see "Possible improvements"). 
+The 178691-word TWL06 dictionary (http://www.isc.ro/lists/twl06.zip) is compressed to about 113735 nodes on my 2,66 GHz Core2 Duo computer in 9,1 seconds. There is another 1 second of safety checking of input and output in the program hosted here. There is a very small variance (< 0,001%) in the number of nodes, most likely because the hashing of memory addresses varies across runs, slightly changing iteration order when interleaving child lists. 
 
 
 ### Implementation
@@ -128,19 +128,15 @@ Steps:
 
 3. Child lists of the remaining nodes are hashed into a table; redundant child lists are discarded by resetting the nodes' pointers to child lists.
 
-4. For each child list it is determined whether some other child list is its strict superset. This will allow us to interleave multiple child lists into one by reordering the nodes. Checking all potential supersets for each child list would be prohibitive. For this reason an inverse hash table is generated: it has the unique trie nodes as keys and lists of child lists that contain the node as values. For each child list we only have to find the smallest relevant list of supersets, and go through that. This way, in the case of the TWL06 dictionary the average number of searches per child list is reduced from about 25000 to 6,7. The interleaving is done on a first-fit basis, where the the longest child lists and the longest possible supersets are tested first. 
+4. For each child list it is determined whether some other child list is its strict superset. This will allow us to interleave multiple child lists into one by reordering the nodes. Checking all potential supersets for each child list would be prohibitive. For this reason an inverse hash table is generated: it has the unique trie nodes as keys and lists of child lists that contain the node as values. For each child list we only have to find the smallest relevant list of supersets, and go through that. This way, in the case of the TWL06 dictionary the average number of searches per child list is reduced from about 25000 to 6,7. The superset testing is done in a way such that the longest child lists with the rarest elements are tested against the shortest possible supersets with the rarest elements. I compute the approximate "rarity" of a child list by summing the global frequencies of its elements. This way the easy-fitting, common child lists don't eat up space before more difficult lists have had their chances. 
 
-5. Nodes are reordered in interleaved child lists. 
-
-6. Child lists and nodes are mapped to a linear array, pointers are converted from memory addresses to array indices. 
+6. Child lists and nodes are mapped to an array, pointers are converted from memory addresses to array indices. In the meanwhile, nodes are reordered in interleaved child lists. 
 
 7. The resulting array is converted to an array of bit-packed integers. 
 
 
 ### Possible improvements
 
-
-- Currently there is a small (< 0,1%) variance in output size, most likely because the hashes of memory addresses vary across runs, which changes the iteration order of some hash tables. I haven't tracked down the exact cause of this; it'd be reassuring to eliminate this and optimize compression to the be near the best case of the current variance.
 
 - Doing a C++ port. I have a C++ implementation of a simpler algorithm that produces about 10% bigger output and runs in 390ms for the TWL06 dictionary. The Python version of that algorithm runs in 6,6 sec. A C++ port for the more complicated algorithm should produce a comparable speedup (though debugging such C++ often compromises my mental balance).
 
