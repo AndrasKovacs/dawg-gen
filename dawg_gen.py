@@ -72,19 +72,20 @@ node_dict = {}
 for x in trie:
     hash_str = "".join((str(x.is_end), x.val, str("".join(y.hash for y in x.children))))
     x.hash = hashlib.md5(hash_str).digest()
-    if x.hash in node_dict: 
-        continue
-    node_dict[x.hash] = x
-    for i,y in enumerate(x.children):
-        x.children[i] = node_dict[y.hash]
-    x.children = tuple(sorted(x.children))   
+    if x.hash not in node_dict: 
+        node_dict[x.hash] = x
+        for i,y in enumerate(x.children):
+            x.children[i] = node_dict[y.hash]
+        x.children = tuple(sorted(x.children))
 
 clist_dict = {x.children: x.children for x in node_dict.itervalues()}
 
 for x in node_dict.itervalues():
     x.children = clist_dict[x.children]
 
+
 print "finished in {:.4} seconds.".format(clock()-t)
+
 
 ########################## Merge child lists ###############################
 
@@ -94,14 +95,15 @@ print "Merging child lists...".ljust(35),
 inverse_dict = defaultdict(list)
 compress_dict = {x:[x] for x in clist_dict.itervalues() if x}
 
+
 for clist in clist_dict.itervalues():
     for node in clist:
         inverse_dict[node].append(clist)
 
 for x in inverse_dict:
-    inverse_dict[x].sort(key=len)
+    inverse_dict[x].sort( key = lambda x: (len(x), sum(len(inverse_dict[y]) for y in x) ))
 
-for clist in sorted(compress_dict.keys(), key=len, reverse=True):
+for clist in sorted(compress_dict.keys(), key = lambda x:(len(x), -1*sum(len(inverse_dict[y]) for y in x)), reverse=True):
     for other in min((inverse_dict[x] for x in clist), key = len):
         if compress_dict[other] and set(clist) < set(compress_dict[other][-1]):
             compress_dict[other].append(clist)
@@ -172,7 +174,7 @@ def extract_words(array, i=root, carry = ""):
         node = array[i]
 
 if sorted(extract_words(array)) == sorted_wordlist:
-    print "OK".ljust(14), "finished in {:.4} seconds.".format(clock()-t)
+    print "OK".ljust(4), "finished in {:.4} seconds.".format(clock()-t)
 else:
     print "Invalid output".ljust(1), "finished in {:.4} seconds.".format(clock()-t)
     exit(1)
