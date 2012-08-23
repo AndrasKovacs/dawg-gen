@@ -141,5 +141,10 @@ Steps:
 - Doing a C++ port. I have a C++ implementation of a simpler algorithm that produces about 10% bigger output and runs in 390ms for the TWL06 dictionary. The Python version of that algorithm runs in 6,6 sec. A C++ port for the more complicated algorithm should produce a comparable speedup (though debugging such C++ often compromises my mental balance).
 
 
+### License
+
+MIT.
+
+
 
 
