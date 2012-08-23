@@ -122,13 +122,13 @@ The 178691-word TWL06 dictionary (http://www.isc.ro/lists/twl06.zip) is compress
 
 Steps:
 
-1. A trie is built from the words.
+1. A trie is built from the word list.
 
 2. A hash-value is computed depth-first for all sub-tries. These hashes are stored in a hash table. Redundant nodes are discarded on the go.
 
-3. Child lists of the remaining nodes are hashed into a table; redundant child lists are discarded by resetting the nodes' pointers to child lists.
+3. Child lists of the remaining nodes are hashed into a table; redundant child lists are discarded.
 
-4. For each child list it is determined whether some other child list is its strict superset. This will allow us to interleave multiple child lists into one by reordering the nodes. Checking all potential supersets for each child list would be prohibitive. For this reason an inverse hash table is generated: it has the unique trie nodes as keys and lists of child lists that contain the node as values. For each child list we only have to find the smallest relevant list of supersets, and go through that. This way, in the case of the TWL06 dictionary the average number of searches per child list is reduced from about 25000 to 6,7. The superset testing is done in a way such that the longest child lists with the rarest elements are tested against the shortest possible supersets with the rarest elements. I compute the approximate "rarity" of a child list by summing the global frequencies of its elements. This way the easy-fitting, common child lists don't eat up space before more difficult lists have had their chances. 
+4. For each child list it is determined whether some other child list is its strict superset. This will allow us to interleave multiple child lists into one by reordering the nodes. Checking all potential supersets for each child list would be prohibitive. For this reason an inverse hash table is generated: it has the unique trie nodes as keys and lists of child lists that contain the node as values. For each child list we only have to find the smallest relevant list of supersets, and go through that. This way, in the case of the TWL06 dictionary the average number of searches per child list is reduced from about 25000 to 6,7. The superset testing is done in a way such that the longest child lists with the rarest elements are tested against the shortest possible supersets with the rarest elements. I compute the approximate "rarity" of a child list by summing the length of the inverse dictionary list for each of its element nodes. This way the small and common child lists don't eat up space before more difficult lists have had their chances. 
 
 6. Child lists and nodes are mapped to an array, pointers are converted from memory addresses to array indices. In the meanwhile, nodes are reordered in interleaved child lists. 
 
