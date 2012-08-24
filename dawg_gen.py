@@ -20,7 +20,7 @@ time = clock()
 print "Checking word list...",
 try:
     wordlist = open(filename).read().split()
-    sorted_wordlist = sorted(wordlist)
+    sorted_wordlist = sorted(wordlist)  
 except IOError:
     print "File not found."
     exit(1)
@@ -58,6 +58,7 @@ class SeqTrie(object):
                 yield y
         yield self
 
+
 t = clock()
 print "Building trie...".ljust(35),
 trie = SeqTrie(wordlist)
@@ -70,7 +71,7 @@ print "Merging redundant nodes...".ljust(35),
 
 node_dict = {}
 for x in trie:
-    hash_str = "".join((str(x.is_end), x.val, str("".join(y.hash for y in x.children))))
+    hash_str = "".join((str(x.is_end), x.val, "".join(y.hash for y in x.children)))
     x.hash = hashlib.md5(hash_str).digest()
     if x.hash not in node_dict: 
         node_dict[x.hash] = x
@@ -176,7 +177,7 @@ def extract_words(array, i=root, carry = ""):
 if sorted(extract_words(array)) == sorted_wordlist:
     print "OK".ljust(4), "finished in {:.4} seconds.".format(clock()-t)
 else:
-    print "Invalid output".ljust(1), "finished in {:.4} seconds.".format(clock()-t)
+    print "INVALID OUTPUT: trie does not match original word list."
     exit(1)
 print 
 print "Compression finished in {:.4} seconds.".format(clock()-time)
@@ -189,8 +190,6 @@ print
 def prompt_filename():
     while True:
         inp = raw_input("Enter export path: ")
-        if inp in ('q', 'Q'): 
-            exit(0)
         if os.path.exists(inp):
             while True:
                 choice = raw_input("File already exists. Overwrite? ")
