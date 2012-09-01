@@ -143,19 +143,23 @@ Steps:
 - Compressing chains of nodes where each node has only one child. For example, 
 
 
+<pre>
            e
           /
 a->b->c->d 
           \
-           f 
+           f
+</pre> 
 
 would become
 
+<pre>
        e
       /
 [abcd]
       \
        f
+</pre>
 
 
 The compressed nodes would need only one pointer at the end of the chain. The minimum size of indices would have to grow though since each character inside a [xxx] would have to be pointable to (the size of indices would then grow because they'd have to point to one-byte blocks or have extra bits for indexing nodes inside a [xxx]).
