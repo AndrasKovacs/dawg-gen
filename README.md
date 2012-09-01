@@ -102,7 +102,7 @@ cellpadding="10">
 
 Notes:
 
-- The maximum number of indexable nodes is 2^17 - 1 = 131071 and 2^2 - 1 = 4194303 respectively.
+- The maximum number of indexable nodes is 2^17 - 1 = 131071 and 2^22 - 1 = 4194303 respectively.
 
 - In the case of 3-byte nodes, the character values are shifted down to the [1,26] range (0 is reserved for root and end nodes). With 4-byte nodes the ASCII values are preserved.
 
