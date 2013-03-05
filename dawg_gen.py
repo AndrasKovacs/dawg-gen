@@ -17,17 +17,16 @@ if len(argv) != 2:
     exit(1)
 filename = argv[1]
 time = clock()
-print "Checking word list...",
+print "Checking word list...", 
 try:
     wordlist = open(filename).read().split()
-    sorted_wordlist = sorted(wordlist)  
 except IOError:
     print "File not found."
     exit(1)
-if not all(all(c.isupper() for c in w) for w in wordlist) or wordlist != sorted(wordlist):
+if not all(all(c.isupper() for c in w) for w in wordlist) or any(b < a for a,b in zip(wordlist, wordlist[1:])):
     print
     print "Invalid word list; please include alphabetically sorted uppercase words delimited by space or newline."
-    exit(1)
+    exit(1) 
 print "OK".ljust(13),
 
   
@@ -174,7 +173,7 @@ def extract_words(array, i=root, carry = ""):
         i += 1
         node = array[i]
 
-if sorted(extract_words(array)) == sorted_wordlist:
+if set(extract_words(array)) == set(wordlist):
     print "OK".ljust(4), "finished in {:.4} seconds.".format(clock()-t)
 else:
     print "INVALID OUTPUT: trie does not match original word list."
