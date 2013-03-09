@@ -52,7 +52,7 @@ For example, a trie containing "AD", "AN", and "AT" may look like this:
     <th>Index</th><th>Character</th><th>End-of-list</th><th>End-of-word</th><th>First child</th>
   </tr>
   <tr>
-    <td>0</td><td>0</td><td>1</td><td>0</td><td>0</td>
+    <td>0</td><td>0</td><td>1</td><td>1</td><td>0</td>
   </tr>
   <tr>
     <td>1</td><td>D</td><td>0</td><td>1</td><td>0</td>

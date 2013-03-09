@@ -119,7 +119,7 @@ print "finished in {:.4} seconds.".format(clock()-t)
 t = clock()
 print "Creating compressed node array...".ljust(35),
 
-end_node = SeqTrie(init = (), is_end = False, val = "", end_of_list = False)
+end_node = SeqTrie(init = (), is_end = False, val = "", end_of_list = True)
 end_node.children = ()
 
 array = [0,]*(sum(len(x[0]) for x in compress_dict.itervalues()) + 1)
@@ -159,6 +159,7 @@ print "finished in {:.4} seconds.".format(clock()-t)
 
 t = clock()
 print "Checking output correctness...",
+
 
 def extract_words(array, i=root, carry = ""):
     node = array[i]
