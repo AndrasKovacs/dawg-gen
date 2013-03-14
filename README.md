@@ -42,7 +42,7 @@ The output is an array of 3- or 4-byte binary chunks. Each chunk encodes a trie 
 - End-of-children-list flag
 - End-of-word flag
 
-In a traditional trie, a node has a character value and a list of child nodes. The main difference (as far as the logical structure goes, the only notable difference) here is that nodes store only a pointer to their first child. This is all that is needed because the children are laid out next to each other in the array, thus iterating over them can be done by incrementing the node index until a node with the end-of-children-list flag set is found. A node that has no children points to a "null" node that has a invalid character value. Also, a root node pointing to the first child in the uppormost child list is always positioned at the very end of the array. This node also has an empty/invalid character value. 
+In a traditional trie, a node has a character value and a list of child nodes. The main difference (as far as the logical structure goes, the only notable difference) here is that nodes store only a pointer to their first child. This is all that is needed because the children are laid out next to each other in the array, thus iterating over them can be done by incrementing the node index until a node with the end-of-children-list flag set is found. A node that has no children has "0" as child index. This implies that the "0" position in the array is invalid and should not be dereferenced. The root node is always positioned at the end of the array and has '\0' as character value.
 
 For example, a trie containing "AD", "AN", and "AT" may look like this:
 
@@ -71,9 +71,7 @@ For example, a trie containing "AD", "AN", and "AT" may look like this:
   </tr>
 </table>
 
-Here the root node points to "A", which in turn points to node 1, and starting from there we can get the other children of "A" by incrementing the index.
-
-Note that only the root node has a fixed position; other nodes (including the null end-node) are laid out arbitrarily. Moreover, child lists are interleaved, for example, the child list "A", "B", "C", "D", may have a parent that points to "A" as first child, and another parent that points to "C". However, neither the interleaving nor the internal ordering change anything about the logical structure. 
+Here the root node points to "A", which in turn points to node 1, and starting from there we can get the other children of "A" by incrementing the index.Note that only the root node (last node) and end node (first node) have predetermined positions. 
 
 
 ### 3- vs. 4-byte nodes

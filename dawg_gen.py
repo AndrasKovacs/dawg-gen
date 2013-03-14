@@ -124,7 +124,11 @@ end_node.children = ()
 
 array = [0,]*(sum(len(x[0]) for x in compress_dict.itervalues()) + 1)
 clist_indices = {}
-pos = 0
+
+array[0] = end_node
+clist_indices[()] = 0
+
+pos = 1
 for stuff in compress_dict.itervalues():
     if len(stuff) > 1:
         sort = [0]*26
@@ -141,9 +145,6 @@ for stuff in compress_dict.itervalues():
     array[pos:pos+len(clist)] = map(copy, clist)
     pos += len(clist)
     array[pos-1].end_of_list = True
-
-array[pos] = end_node
-clist_indices[()] = pos
 
 for x in array:
     x.children = clist_indices[x.children]
