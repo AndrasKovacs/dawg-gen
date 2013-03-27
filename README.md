@@ -22,7 +22,7 @@ https://github.com/chalup/dawggenerator for piquing my interest and the basic id
 
 Launch from console:
 
-    $ dawg_gen.py [word list file]
+    $ dawg_gen.py [word_list file]
 
 Note that the word list must be sorted, delimited by space or newline and have uppercase words. The program will prompt you for 
 
