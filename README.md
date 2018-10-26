@@ -47,7 +47,7 @@ In a traditional trie, a node has a character value and a list of child nodes. T
 For example, a trie containing "AD", "AN", and "AT" may look like this:
 
 
-<table border="1">
+<table>
   <tr>
     <th>Index</th><th>Character</th><th>End-of-list</th><th>End-of-word</th><th>First child</th>
   </tr>
@@ -79,8 +79,7 @@ Here the root node points to "A", which in turn points to node 1, and starting f
 
 Bit layout:
 
-<table border="1"
-cellpadding="10">
+<table cellpadding="10">
   <tr>
     <th></th><th>3 byte</th><th>4 byte</th>
   </tr>
